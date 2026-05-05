@@ -1,1 +1,65 @@
-<h1>Hello World Wide Web!</h1>
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js">
+</script>
+
+<style>
+  body {
+    background: black;
+  }
+</style>
+
+<script>
+  /*global nn*/
+  let canvas, dx
+  
+  class Spike {
+    constructor () {
+      this.l1x1 = 0
+      this.l1y1 = 0
+      this.l1x2 = 0
+      this.l1y2 = 0
+      
+      this.l2x1 = 0
+      this.l2y1 = 0
+      this.l2x2 = 0
+      this.l2y2 = 0
+      
+      this.l3x1 = 0
+      this.l3y1 = 0
+      this.l3x2 = 0
+      this.l3y2 = 0
+    }
+    
+    update () {
+      this.l1x1 += dx
+      this.l1x2 += dx
+      this.l2x1 += dx
+      this.l2x2 += dx
+      this.l3x1 += dx
+      this.l3x2 += dx
+    }
+  }
+  
+  function setup() {
+    canvas = nn.create('canvas')
+      .css('border', 'white 1px solid')
+      .position(50,nn.height/4)
+      .resize(nn.width-100, nn.height/2-50)
+      .addTo('body')
+    canvas.strokeColor = 'white'
+    canvas.fillStyle = 'transparent'
+  }
+  
+  function draw() {
+    canvas.line(0, canvas.height/2, canvas.width/2, canvas.height/2)
+    console.log(canvas.height, canvas.width)
+    console.log(nn.height, nn.width)
+  }
+  
+  function resize () {
+    canvas.resize(nn.width-100, nn.height/2-50)
+  }
+  
+  nn.on('load', setup)
+  nn.on('resize', resize)
+  nn.on('load', draw)
+</script>
