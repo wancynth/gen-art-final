@@ -42,12 +42,14 @@
 
 <script>
   /*global nn*/
-  let canvas, dx, bpm, bpmUp, w, poop
+  let canvas, dx, bpm, bpmUp, w, poop, popupText, delay
   let restStatement = 1
   let restStatements = ["i think i'll die if i don't", "i need to", "i want to have", "when will this", "i'm so"]
   let restWords = ["sleep", "relax", "fun", "end", "tired"]
   let workStatements = ["i have to keep", "but i need all my work to be", "there is no"]
   let workWords = ["working", "done", "end"]
+  let popupWords = ["if", "this", "is", "how", "it", "is", "now", "then", "will", "it", "ever", "get", "better", "or", "will", "it", "be", "miserable", "forever"]
+  let autoPopup = []//put images here
   
   class Spike {
     constructor () {
@@ -101,6 +103,8 @@
             margin: 2
             })
     console.log(poop)
+    delay = 6000
+    autoBPM()
   }
   
   function draw() {
@@ -120,13 +124,6 @@
     let workIndex = Math.round(nn.random(workStatements.length - 1))
     console.log(restIndex, workIndex)
     if (restStatement === 1){
-      // if (this.id === "rest") {
-      //   if (bpm >60){
-      //   bpm -= 5 }
-      // } else {
-      //   bpm += bpmUp
-      //   bpmUp += 3
-      // }
       if (bpm > 60) {
         bpm -= Math.round(nn.random(1,10))
       }
@@ -135,20 +132,22 @@
                                                              .set('class','popup-text')
                                                              .content(`${workWords[workIndex]}`))
       nn.getAll('.popup-text').forEach(setUpClicks)
-      checkBPM()
     } else {
-      bpm += Math.round(nn.random(1+bpmUp, 6+bpmUp))
+      bpm += Math.round(nn.random(2+bpmUp, 6+bpmUp))
+      bpmUp += 1
       restStatement = 1
       nn.get('#rest-text').content(`${restStatements[workIndex]} `).append(nn.create('span')
                                                              .set('class','popup-text')
                                                              .content(`${restWords[workIndex]}`))
       nn.getAll('.popup-text').forEach(setUpClicks)
-      checkBPM()
     }
     poop.content(`${bpm}`)
     const windowFeatures = `left=${Math.round(nn.random(100, 800))},top=${Math.round(nn.random(100, 500))},width=320,height=320,popup=yes`;
-    w = window.open("","popup", windowFeatures)
-    setTimeout(close, 10000)
+    w = window.open("","popup",windowFeatures)
+    let popupHTML = `<style>body {background: black; align-content:center} p {text-align:center; font-size: 48pt;color:red}</style><p>${nn.random(popupWords)}</p>`
+    w.document.body.innerHTML = popupHTML
+    setTimeout(close, 300)
+    checkBPM()
   }
   
   function close() {
@@ -159,9 +158,29 @@
     if (bpm >= 150){
       nn.get("#heartrate").css({color: "red"})
     }
-    if (pm >= 250) {
+    else {
+      nn.get("#heartrate").css({color: "white"})
+    }
+
+    if (bpm >= 250) {
       window.close()
     }
+    
+    checkBPM()
+  }
+  
+  function autoBPM() {
+    bpm += bpmUp
+    delay -= 50
+    poop.content(`${bpm}`)
+    const windowFeatures = `left=${Math.round(nn.random(100, 800))},top=${Math.round(nn.random(100, 500))},width=320,height=320,popup=yes`;
+    w = window.open("","popup",windowFeatures)
+    let popupHTML = `<style>body {background: black; align-content:center} p {text-align:center; font-size: 48pt;color:white}</style><p>${nn.random(popupWords)}</p>`
+    w.document.body.innerHTML = popupHTML
+    setTimeout(close, 300)
+    
+    console.log(delay)
+    // setTimeout(autoBPM, delay)
   }
   
   function resize () {
