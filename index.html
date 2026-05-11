@@ -2,14 +2,44 @@
 </script>
 
 <style>
+  @font-face {
+    font-family: "Monospace-Typewriter";
+    src: url("MonospaceTypewriter.ttf") format("truetype");
+  }
+  
   body {
     background: black;
+    font-family: "Monospace-Typewriter";
+  }
+  
+  p {
+    text-align: center;
+    font-size: min(3vw, 21pt);
+    color: white;
+  }
+  
+  #objectives {
+    align-content: center;
+    top: 0;
+/*     background: red; */
+    height: 20vh;
+  }
+  
+  .popup-text {
+    color: red;
+    text-decoration: underline red;
+    cursor: pointer;
   }
 </style>
 
+<section id="objectives">
+  <p>i have so much <span class="popup-text">work</span> to do</p>
+  <p>but i'm so tired, i want to <span class="popup-text">rest</span></p>
+</section>
+
 <script>
   /*global nn*/
-  let canvas, dx
+  let canvas, dx, bpm, w
   
   class Spike {
     constructor () {
@@ -47,12 +77,31 @@
       .addTo('body')
     canvas.strokeColor = 'white'
     canvas.fillStyle = 'transparent'
+    
+    nn.getAll('.popup-text').forEach(setUpClicks)
+    
+    bpm = 70
   }
   
   function draw() {
     canvas.line(0, canvas.height/2, canvas.width/2, canvas.height/2)
     console.log(canvas.height, canvas.width)
     console.log(nn.height, nn.width)
+  }
+  
+  function setUpClicks(ele) {
+    ele.on('click', increase)
+  }
+  
+  function increase() {
+    bpm += 5
+    const windowFeatures = "left=100,top=100,width=320,height=320,popup=yes";
+    w = window.open("","popup", windowFeatures)
+    setTimeout(close, 10000)
+  }
+  
+  function close() {
+    w.close()
   }
   
   function resize () {
