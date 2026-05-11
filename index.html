@@ -30,16 +30,24 @@
     text-decoration: underline red;
     cursor: pointer;
   }
+  
+  #rest-text
+
 </style>
 
 <section id="objectives">
-  <p>i have so much <span class="popup-text">work</span> to do</p>
-  <p>but i'm so tired, i want to <span class="popup-text">rest</span></p>
+  <p>i have so much work to do</p>
+  <p id="rest-text">but i'm so tired, i want to <span class="popup-text">rest</span></p>
 </section>
 
 <script>
   /*global nn*/
-  let canvas, dx, bpm, w
+  let canvas, dx, bpm, bpmUp, w, poop
+  let restStatement = 1
+  let restStatements = ["i think i'll die if i don't", "i need to", "i want to have", "when will this", "i'm so"]
+  let restWords = ["sleep", "relax", "fun", "end", "tired"]
+  let workStatements = ["i have to keep", "but i need all my work to be", "there is no"]
+  let workWords = ["working", "done", "end"]
   
   class Spike {
     constructor () {
@@ -81,27 +89,79 @@
     nn.getAll('.popup-text').forEach(setUpClicks)
     
     bpm = 70
+    bpmUp = 5
+    
+    poop = nn.create('p').set("id",'heartrate').content(`${bpm}`).addTo('body')
+            .css({
+            position: 'absolute',
+            justifySelf: 'center',
+            fontSize: "min(25vw, 19vh, 72pt)",
+            bottom: 20,
+            // background: 'red', 
+            margin: 2
+            })
+    console.log(poop)
   }
   
   function draw() {
     canvas.line(0, canvas.height/2, canvas.width/2, canvas.height/2)
     console.log(canvas.height, canvas.width)
     console.log(nn.height, nn.width)
+    //add flashing background that corresponds with heartrate?
   }
   
   function setUpClicks(ele) {
-    ele.on('click', increase)
+    ele.on('click', changeBPM)
   }
   
-  function increase() {
-    bpm += 5
-    const windowFeatures = "left=100,top=100,width=320,height=320,popup=yes";
+  function changeBPM() {
+    console.log(this.id)
+    let restIndex = Math.round(nn.random(restStatements.length - 1))
+    let workIndex = Math.round(nn.random(workStatements.length - 1))
+    console.log(restIndex, workIndex)
+    if (restStatement === 1){
+      // if (this.id === "rest") {
+      //   if (bpm >60){
+      //   bpm -= 5 }
+      // } else {
+      //   bpm += bpmUp
+      //   bpmUp += 3
+      // }
+      if (bpm > 60) {
+        bpm -= Math.round(nn.random(1,10))
+      }
+      restStatement = -1
+      nn.get('#rest-text').content(`${workStatements[workIndex]} `).append(nn.create('span')
+                                                             .set('class','popup-text')
+                                                             .content(`${workWords[workIndex]}`))
+      nn.getAll('.popup-text').forEach(setUpClicks)
+      checkBPM()
+    } else {
+      bpm += Math.round(nn.random(1+bpmUp, 6+bpmUp))
+      restStatement = 1
+      nn.get('#rest-text').content(`${restStatements[workIndex]} `).append(nn.create('span')
+                                                             .set('class','popup-text')
+                                                             .content(`${restWords[workIndex]}`))
+      nn.getAll('.popup-text').forEach(setUpClicks)
+      checkBPM()
+    }
+    poop.content(`${bpm}`)
+    const windowFeatures = `left=${Math.round(nn.random(100, 800))},top=${Math.round(nn.random(100, 500))},width=320,height=320,popup=yes`;
     w = window.open("","popup", windowFeatures)
     setTimeout(close, 10000)
   }
   
   function close() {
     w.close()
+  }
+  
+  function checkBPM() {
+    if (bpm >= 150){
+      nn.get("#heartrate").css({color: "red"})
+    }
+    if (pm >= 250) {
+      window.close()
+    }
   }
   
   function resize () {
