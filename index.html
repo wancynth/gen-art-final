@@ -42,7 +42,7 @@
 
 <script>
   /*global nn*/
-  let canvas, dx, bpm, bpmUp, w, poop, popupText, delay, heart
+  let canvas, bpm, bpmUp, w, poop, popupText, delay, heart
   let restStatement = 1
   let restStatements = ["i think i'll die if i don't", "i need to", "i want to have", "when will this", "i'm so"]
   let restWords = ["sleep", "relax", "fun", "end", "tired"]
@@ -50,23 +50,25 @@
   let workWords = ["working", "done", "end"]
   let popupWords = ["if", "this", "is", "how", "it", "is", "now", "then", "will", "it", "ever", "get", "better", "or", "will", "it", "be", "miserable", "forever"]
   let autoPopup = []//put images here
+  let dx = 10
+  let spikes = []
   
   class Spike {
     constructor () {
-      this.l1x1 = 0
-      this.l1y1 = 0
-      this.l1x2 = 0
-      this.l1y2 = 0
+      this.l1x1 = canvas.width
+      this.l1y1 = canvas.height/2
+      this.l1x2 = canvas.width + 10
+      this.l1y2 = 20
       
-      this.l2x1 = 0
-      this.l2y1 = 0
-      this.l2x2 = 0
-      this.l2y2 = 0
+      this.l2x1 = this.l1x2
+      this.l2y1 = this.l1y2
+      this.l2x2 = this.l2x2 + 10
+      this.l2y2 = canvas.height - 20
       
-      this.l3x1 = 0
-      this.l3y1 = 0
-      this.l3x2 = 0
-      this.l3y2 = 0
+      this.l3x1 = this.l2x2
+      this.l3y1 = this.l2y2
+      this.l3x2 = this.l3x2 + 10
+      this.l3y2 = canvas.height/2
     }
     
     update () {
@@ -87,6 +89,7 @@
       .addTo('body')
     canvas.strokeColor = 'white'
     canvas.fillStyle = 'transparent'
+    canvas.line(0, canvas.height/2, canvas.width, canvas.height/2)
     
     nn.getAll('.popup-text').forEach(setUpClicks)
     
@@ -125,9 +128,18 @@
   }
   
   function draw() {
-    canvas.line(0, canvas.height/2, canvas.width/2, canvas.height/2)
-    console.log(canvas.height, canvas.width)
-    console.log(nn.height, nn.width)
+    if (spikes[0].l3x2 <= 0) {
+      spikes.shift()
+    }
+    let spikeFPS = (bpm / 60) * 1000
+    const s = new Spike()
+    setTimeout(spikes.push(s), spikeFPS)
+    spikes.forEach(sp => {
+      sp.update()
+      canvas.line(sp.l1x1, sp.l1y1, sp.l1x2, sp.l1y2)
+      canvas.line(sp.l2x1, sp.l2y1, sp.l2x2, sp.l2y2)
+      canvas.line(sp.l3x1, sp.l3y1, sp.l3x2, sp.l3y2)
+  })
     //add flashing background that corresponds with heartrate?
   }
   
@@ -207,7 +219,7 @@
   }
   
   function autoDecrease() {
-    setTimeout(autoDecrease, 1500)
+    // setTimeout(autoDecrease, 1500)
     if (!nn.mouseMove){
       if (bpm > 60) {
          bpm -= 0.5
