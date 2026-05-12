@@ -42,7 +42,7 @@
 
 <script>
   /*global nn*/
-  let canvas, dx, bpm, bpmUp, w, poop, popupText, delay
+  let canvas, dx, bpm, bpmUp, w, poop, popupText, delay, heart
   let restStatement = 1
   let restStatements = ["i think i'll die if i don't", "i need to", "i want to have", "when will this", "i'm so"]
   let restWords = ["sleep", "relax", "fun", "end", "tired"]
@@ -93,9 +93,25 @@
     bpm = 70
     bpmUp = 5
     
-    poop = nn.create('p').set("id",'heartrate').content(`${bpm}`).addTo('body')
-            .css({
+    heartbeatDiv = nn.create('div').css({
+            display: 'flex',
             position: 'absolute',
+            height: "min(20vw, 16vh, 100pt)", width: "60vw",
+            alignContent: 'center',
+            justifyContent: 'center',
+            justifySelf: 'center',
+            bottom: 50,
+            margin: 2,
+            // background: 'red'
+    }).addTo('body')
+    heart = nn.create('p').content("❤︎⁠").css({
+            justifySelf: 'center',
+            fontSize: "min(20vw, 16vh, 64pt)",
+            bottom: 20,
+            margin: 2
+            }).addTo(heartbeatDiv)
+    poop = nn.create('p').set("id",'heartrate').content(`${Math.round(bpm)}`).addTo(heartbeatDiv)
+            .css({
             justifySelf: 'center',
             fontSize: "min(25vw, 19vh, 72pt)",
             bottom: 20,
@@ -105,6 +121,7 @@
     console.log(poop)
     delay = 6000
     autoBPM()
+    setTimeout(autoDecrease, 3000)
   }
   
   function draw() {
@@ -141,7 +158,7 @@
                                                              .content(`${restWords[workIndex]}`))
       nn.getAll('.popup-text').forEach(setUpClicks)
     }
-    poop.content(`${bpm}`)
+    poop.content(`${Math.round(bpm)}`)
     const windowFeatures = `left=${Math.round(nn.random(100, 800))},top=${Math.round(nn.random(100, 500))},width=320,height=320,popup=yes`;
     w = window.open("","popup",windowFeatures)
     let popupHTML = `<style>body {background: black; align-content:center} p {text-align:center; font-size: 48pt;color:red}</style><p>${nn.random(popupWords)}</p>`
@@ -157,9 +174,11 @@
   function checkBPM() {
     if (bpm >= 150){
       nn.get("#heartrate").css({color: "red"})
+      nn.get(heart).css({color: "red"})
     }
     else {
       nn.get("#heartrate").css({color: "white"})
+      nn.get(heart).css({color: "white"})
     }
 
     if (bpm >= 250) {
@@ -170,9 +189,7 @@
   }
   
   function autoBPM() {
-    bpm += bpmUp
     delay -= 50
-    poop.content(`${bpm}`)
     const windowFeatures = `left=${Math.round(nn.random(100, 800))},top=${Math.round(nn.random(100, 500))},width=320,height=320,popup=yes`;
     w = window.open("","popup",windowFeatures)
     let popupHTML = `<style>body {background: black; align-content:center} p {text-align:center; font-size: 48pt;color:white}</style><p>${nn.random(popupWords)}</p>`
@@ -183,6 +200,23 @@
     // setTimeout(autoBPM, delay)
   }
   
+  function moveBPM() {
+    bpm += 0.45
+    poop.content(`${Math.round(bpm)}`)
+    checkBPM()
+  }
+  
+  function autoDecrease() {
+    setTimeout(autoDecrease, 1500)
+    if (!nn.mouseMove){
+      if (bpm > 60) {
+         bpm -= 0.5
+      }
+      poop.content(`${Math.round(bpm)}`)
+      checkBPM()
+    }
+  }
+  
   function resize () {
     canvas.resize(nn.width-100, nn.height/2-50)
   }
@@ -190,4 +224,5 @@
   nn.on('load', setup)
   nn.on('resize', resize)
   nn.on('load', draw)
+  nn.on('mousemove', moveBPM)
 </script>
