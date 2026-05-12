@@ -50,34 +50,48 @@
   let workWords = ["working", "done", "end"]
   let popupWords = ["if", "this", "is", "how", "it", "is", "now", "then", "will", "it", "ever", "get", "better", "or", "will", "it", "be", "miserable", "forever"]
   let autoPopup = []//put images here
-  let dx = 10
+  let dx = 30
   let spikes = []
+  let l1x1Var
+  
+  // let offset
   
   class Spike {
     constructor () {
-      this.l1x1 = canvas.width
+      this.offset = (20000 / Math.pow(bpm, 1.2))
+      
+      this.l1x1 = l1x1Var
       this.l1y1 = canvas.height/2
-      this.l1x2 = canvas.width + 10
+      this.l1x2 = this.l1x1 + 10
       this.l1y2 = 20
       
       this.l2x1 = this.l1x2
       this.l2y1 = this.l1y2
-      this.l2x2 = this.l2x2 + 10
+      this.l2x2 = this.l2x1 + 10
       this.l2y2 = canvas.height - 20
       
       this.l3x1 = this.l2x2
       this.l3y1 = this.l2y2
-      this.l3x2 = this.l3x2 + 10
+      this.l3x2 = this.l3x1 + 10
       this.l3y2 = canvas.height/2
+      
+      this.o1x1 = this.l3x2
+      this.o1y1 = canvas.height/2
+      this.o1x2 = this.l3x2 + this.offset
+      this.o1y2 = canvas.height/2
+
     }
     
     update () {
-      this.l1x1 += dx
-      this.l1x2 += dx
-      this.l2x1 += dx
-      this.l2x2 += dx
-      this.l3x1 += dx
-      this.l3x2 += dx
+      this.l1x1 -= dx
+      this.l1x2 -= dx
+      this.l2x1 -= dx
+      this.l2x2 -= dx
+      this.l3x1 -= dx
+      this.l3x2 -= dx
+      
+      this.o1x1 = this.l3x2
+      this.o1x2 = this.o1x1 + (20000 / Math.pow(bpm, 1.2))
     }
   }
   
@@ -89,8 +103,7 @@
       .addTo('body')
     canvas.strokeColor = 'white'
     canvas.fillStyle = 'transparent'
-    canvas.line(0, canvas.height/2, canvas.width, canvas.height/2)
-    
+   
     nn.getAll('.popup-text').forEach(setUpClicks)
     
     bpm = 70
@@ -127,18 +140,46 @@
     setTimeout(autoDecrease, 3000)
   }
   
-  function draw() {
-    if (spikes[0].l3x2 <= 0) {
-      spikes.shift()
+  function addSpike() {
+    console.log('new spike added')
+    offset = 20000 / Math.pow(bpm, 1.2)
+    console.log('bpm', bpm)
+    console.log('offset', offset)
+  
+    if (spikes.length === 0) {
+      console.log('condition1')
+      l1x1Var = canvas.width
     }
-    let spikeFPS = (bpm / 60) * 1000
+    else if (spikes.length >= 1){
+      console.log('l1x1Var before', l1x1Var)
+      console.log('condition2')
+      const lastSpike = spikes[spikes.length - 1]
+      console.log(lastSpike)
+      l1x1Var = lastSpike.o1x2
+      console.log(l1x1Var)
+    }
     const s = new Spike()
-    setTimeout(spikes.push(s), spikeFPS)
+    spikes.push(s)
+    console.log(s.l1x1, s.l3x2, l1x1Var)
+  }
+  
+  function draw() {
+    canvas.fillStyle = nn.rgb(0, 0, 0)
+    canvas.rect(0, 0, canvas.width, canvas.height)
+    spikes.forEach(sp => sp.update())
+    addSpike()
+    let spikeFPS = (60/bpm) * 1000
+    console.log(spikeFPS)
+    setTimeout(draw, spikeFPS)
+    if (spikes[0].l3x2 <= 0){
+      spikes.shift()}
     spikes.forEach(sp => {
       sp.update()
       canvas.line(sp.l1x1, sp.l1y1, sp.l1x2, sp.l1y2)
       canvas.line(sp.l2x1, sp.l2y1, sp.l2x2, sp.l2y2)
       canvas.line(sp.l3x1, sp.l3y1, sp.l3x2, sp.l3y2)
+      canvas.line(sp.o1x1, sp.o1y1, sp.o1x2, sp.o1y2)
+      console.log('offsetvalue',sp.o1x2 - sp.o1x1)
   })
     //add flashing background that corresponds with heartrate?
   }
@@ -213,13 +254,13 @@
   }
   
   function moveBPM() {
-    bpm += 0.45
+    bpm += 0.6
     poop.content(`${Math.round(bpm)}`)
     checkBPM()
   }
   
   function autoDecrease() {
-    // setTimeout(autoDecrease, 1500)
+    setTimeout(autoDecrease, 1500)
     if (!nn.mouseMove){
       if (bpm > 60) {
          bpm -= 0.5
