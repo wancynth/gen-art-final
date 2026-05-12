@@ -36,7 +36,7 @@
 </style>
 
 <section id="objectives">
-  <p>i have so much work to do</p>
+  <p>the world won't wait for you</p>
   <p id="rest-text">but i'm so tired, i want to <span class="popup-text">rest</span></p>
 </section>
 
@@ -49,7 +49,7 @@
   let workStatements = ["i have to keep", "but i need all my work to be", "there is no"]
   let workWords = ["working", "done", "end"]
   let popupWords = ["if", "this", "is", "how", "it", "is", "now", "then", "will", "it", "ever", "get", "better", "or", "will", "it", "be", "miserable", "forever"]
-  let autoPopup = ["⌫","","❝","¶","ﮩ٨ـﮩﮩ٨ـ♡ﮩ٨ـﮩﮩ٨ـ","𝜗𝜚⋆₊˚", "ḁ̶̡͇͍̼̭͕͉̱̻͔̬͉̩ͤ̀̒̇ͮͫ͆ͥͦ̿̓ͨ͌̎ͥ̿̀̓͟ţ̶̵̶̢̢̨̛̛̛̦̲͎͓͖͕̲̤͔̓͒ͦ̔ͪͦ̋ͪͤ̿ͧ̎̊̀̃́̆ͥ͗̈͘͟͡ 4̶̢̢̢̛̘̯̹̦̣̥͇̣̞͎̼̫̭͋̑̉ͪ̊̾͑͆̇ͤ́́̊ͣ̃̾̆͗ͣ̅́͂̃͝͡͡͡ͅͅ a̙̩̅m"]//put images here
+  let autoPopup = ["⌫","","❝","¶","ﮩ٨ـﮩﮩ٨ـ♡ﮩ٨ـﮩﮩ٨ـ","𝜗𝜚⋆₊˚", "ḁ̶̡͇͍̼̭͕͉̱̻͔̬͉̩ͤ̀̒̇ͮͫ͆ͥͦ̿̓ͨ͌̎ͥ̿̀̓͟ţ̶̵̶̢̢̨̛̛̛̦̲͎͓͖͕̲̤͔̓͒ͦ̔ͪͦ̋ͪͤ̿ͧ̎̊̀̃́̆ͥ͗̈͘͟͡ 4̶̢̢̢̛̘̯̹̦̣̥͇̣̞͎̼̫̭͋̑̉ͪ̊̾͑͆̇ͤ́́̊ͣ̃̾̆͗ͣ̅́͂̃͝͡͡͡ͅͅ a̙̩̅m", "you're going to be left behind", "i wonder what happens if i reach 200bpm"]//put images here
   let dx = 30
   let spikes = []
   let l1x1Var
@@ -214,8 +214,8 @@
     poop.content(`${Math.round(bpm)}`)
     const windowFeatures = `left=${Math.round(nn.random(100, 800))},top=${Math.round(nn.random(100, 500))},width=320,height=320,popup=yes`;
     w = window.open("","popup",windowFeatures)
-    let popupHTML = `<style>body {background: black; align-content:center} p {text-align:center; font-size: 48pt;color:red}</style><>${nn.random(popupWords)}</p>`
-    w.document.body.innerHTML = popupHTML
+    let popupHTML1 = `<style>body {background: black; align-content:center} p {text-align:center; font-size: 48pt;color:red}</style><p>${nn.random(popupWords)}</p>`
+    w.document.body.innerHTML = popupHTML1
     setTimeout(close, 300)
     checkBPM()
   }
@@ -225,7 +225,7 @@
   }
   
   function checkBPM() {
-    if (bpm >= 150){
+    if (bpm >= 120){
       nn.get("#heartrate").css({color: "red"})
       nn.get(heart).css({color: "red"})
     }
